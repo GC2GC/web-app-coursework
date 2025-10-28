@@ -1,0 +1,39 @@
+// Test 1: Get a post and its engagement metrics
+$post = App\Models\Post::first();
+"=== Post #{$post->id}: {$post->title} ===";
+"Views: {$post->views_count}";
+"Likes: {$post->likes_count}";
+"Comments: {$post->comments_count}";
+
+// Test 2: Engagement metrics method
+$metrics = $post->getEngagementMetrics();
+"=== Engagement Metrics ===";
+$metrics;
+
+// Test 3: Order by most views
+"=== Top 3 Most Viewed Posts ===";
+App\Models\Post::orderByMostViews()->take(3)->get();
+
+// Test 4: Order by most likes
+"=== Top 3 Most Liked Posts ===";
+App\Models\Post::orderByMostLikes()->take(3)->get();
+
+// Test 5: Order by engagement
+"=== Top 3 Most Engaged Posts ===";
+App\Models\Post::orderByEngagement()->take(3)->get();
+
+// Test 6: With minimum views
+"=== Posts with at least 5 views: ===";
+App\Models\Post::withMinViews(5)->count();
+
+// Test 7: With minimum likes
+"=== Posts with at least 3 likes: ===";
+App\Models\Post::withMinLikes(3)->count();
+
+// Test 8: Trending posts
+"=== Trending Posts (last 7 days) ===";
+App\Models\Post::trending(7)->take(3)->get();
+
+// Test 9: Popular posts
+"=== Popular Posts (above median) ===";
+App\Models\Post::popular()->take(3)->get();

@@ -1,0 +1,31 @@
+The task is to plan and create a simple web application, using Laravel. This coursework involves writing
+part-of the back-end of that web application.
+There is a total of 50 marks available for this coursework. This coursework is worth 15% of your total
+grade for this module.
+The web application should have the following basic functionality:
+1. Users can create posts and comment on their own and other users’ posts.
+2. Basic analytics is displayed for posts, for example number of unique views.
+You could create a simple blog where the admin can post articles which users can comment on, or a
+simple version of canvas where admin (or lecturers) can post lecture slides and students can comment on
+them. This is the basic functionality only; it is up to you to look at the mark scheme and
+add functionality to evidence various skills. Plan this before you start.
+Each user has the following information associated with them:
+• ID
+• First Name
+• Last Name
+• Adminstrator flag (true if they are an administrator, false if not)
+Your Task
+Your job is to create the various migrations, models, seeds and model factories. Your seeds and model
+factories must populate the database with random and meaningful values broadly covering all possible
+scenarios. Your seeds and model factories must also create some fixed and stable values (at least one
+adminstrator, one user, etc).
+Marking Scheme
+Marks are allocated as follows:
+• Migrations - 10 marks
+• Models - 8 marks
+• Seeds - 14 marks
+• Model Factories - 8 marks
+• Basic Analytics - 10 marks
+The marks will be awarded based on the functionality and quality of each category above. For example ,
+seeds must populate the database with random data that covers all situations. Please see the rubric for
+coursework 1 for a better breakdown of marks.
