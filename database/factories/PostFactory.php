@@ -13,9 +13,6 @@ class PostFactory extends Factory
     
     /**
      * model state
-     * 
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {

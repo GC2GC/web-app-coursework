@@ -18,8 +18,6 @@ class UserFactory extends Factory
 
     /**
      * model state
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {
@@ -28,6 +26,7 @@ class UserFactory extends Factory
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            //Hash class is required here, we can not store plain passwords
             'password' => static::$password ??= Hash::make('password'),
             'is_administrator' => false,
             'remember_token' => Str::random(10),

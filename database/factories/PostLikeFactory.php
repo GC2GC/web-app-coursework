@@ -13,8 +13,6 @@ class PostLikeFactory extends Factory
 {
     /**
      * model state
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {
@@ -25,7 +23,7 @@ class PostLikeFactory extends Factory
     }
 
     /**
-     * Create a like from a specific user for a specific post.
+     * create a like from a user
      */
     public function byUserForPost(User $user, Post $post): static
     {

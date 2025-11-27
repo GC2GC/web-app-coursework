@@ -5,13 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+
 class PostView extends Model
 {
     /** @use HasFactory<\Database\Factories\PostViewFactory> */
     use HasFactory;
 
+
     protected $table = 'post_views';
 
+    //fillable fields
     protected $fillable = [
         'post_id',
         'ip_address',
@@ -19,6 +23,7 @@ class PostView extends Model
         'viewed_date',
     ];
 
+    //casting to datetime
     protected function casts(): array
     {
         return [
@@ -29,7 +34,7 @@ class PostView extends Model
     }
 
     /**
-     * Get the post this view is for.
+     * post this view is for
      */
     public function post()
     {
@@ -37,7 +42,7 @@ class PostView extends Model
     }
 
     /**
-     * Get the user who viewed the post (if authenticated).
+     * get the user who viewed the post
      */
     public function viewer()
     {

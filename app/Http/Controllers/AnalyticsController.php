@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AnalyticsController extends Controller
 {
     /**
-     * Record a view on a post.
+     * record the view of a post on request
      */
     public function recordView(Request $request, Post $post)
     {
@@ -34,7 +34,7 @@ class AnalyticsController extends Controller
     }
 
     /**
-     * Get analytics for a post.
+     * get analytics for a specific post
      */
     public function getAnalytics(Post $post)
     {
@@ -54,8 +54,10 @@ class AnalyticsController extends Controller
         ]);
     }
 
+
+
     /**
-     * Get analytics for all posts.
+     * all post analytics
      */
     public function getAllAnalytics()
     {
@@ -69,6 +71,7 @@ class AnalyticsController extends Controller
             ];
         });
 
+        
         return response()->json([
             'data' => $posts,
             'total_posts' => count($posts),

@@ -13,8 +13,6 @@ class CommentFactory extends Factory
 {
     /**
      * model state
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {

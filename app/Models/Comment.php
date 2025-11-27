@@ -25,7 +25,7 @@ class Comment extends Model
     }
 
     /**
-     * Get the post this comment belongs to.
+     * get the post that this comment belongs to
      */
     public function post()
     {
@@ -33,7 +33,7 @@ class Comment extends Model
     }
 
     /**
-     * Get the author of this comment.
+     * get comment author
      */
     public function author()
     {

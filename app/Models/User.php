@@ -13,9 +13,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * attributes that are mass assignable
      *
-     * @var list<string>
      */
     protected $fillable = [
         'first_name',
@@ -26,9 +25,8 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * hidden attributes
      *
-     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -36,9 +34,8 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * should be cast
      *
-     * @return array<string, string>
      */
     protected function casts(): array
     {
@@ -50,15 +47,16 @@ class User extends Authenticatable
     }
 
     /**
-     * Get posts authored by this user.
+     * posts authored by this user
      */
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
 
+
     /**
-     * Get comments written by this user.
+     *comments made by user
      */
     public function comments()
     {
@@ -66,7 +64,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get likes given by this user.
+     * likes made by user
      */
     public function likes()
     {
@@ -74,7 +72,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get views recorded for this user.
+     * views recorder for this user
      */
     public function views()
     {

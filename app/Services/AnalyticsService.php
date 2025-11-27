@@ -10,36 +10,19 @@ use Illuminate\Support\Carbon;
 class AnalyticsService
 {
     /**
-     * Record a view for a post.
-     * Ensures one view per IP/user per day.
+     * record a view for a post
+     * creates a new view record on every request
      */
     public static function recordView(Post $post, ?string $ipAddress = null, ?int $userId = null): bool
     {
         $today = Carbon::now()->toDateString();
         
-        // If neither IP nor user is provided, use request IP
+        // if neither IP nor user is provided, use request IP
         if (!$ipAddress && !$userId) {
             $ipAddress = request()->ip();
         }
 
-        // Check if view already exists for today
-        $existingView = PostView::where('post_id', $post->id)
-            ->where('viewed_date', $today);
-
-        if ($ipAddress) {
-            $existingView->where('ip_address', $ipAddress);
-        }
-
-        if ($userId) {
-            $existingView->where('user_id', $userId);
-        }
-
-        // If view exists for this IP/user today, don't create duplicate
-        if ($existingView->exists()) {
-            return false;
-        }
-
-        // Create new view record
+        // always create a new view record
         PostView::create([
             'post_id' => $post->id,
             'ip_address' => $ipAddress,
@@ -47,17 +30,17 @@ class AnalyticsService
             'viewed_date' => $today,
         ]);
 
-        // Update post views count
+        // update view count
         $post->update([
-            'views_count' => $post->views()->distinct('ip_address')->count('ip_address'),
+            'views_count' => $post->views()->count(),
         ]);
 
         return true;
     }
 
     /**
-     * Toggle a like on a post by a user.
-     * Returns true if like was created, false if removed.
+     * toggle like
+     * Returns true if like was created, false if removed
      */
     public static function toggleLike(Post $post, int $userId): bool
     {
@@ -66,28 +49,35 @@ class AnalyticsService
             ->first();
 
         if ($like) {
-            // Remove like
+
             $like->delete();
             $liked = false;
+            \Log::info("Like removed for user $userId on post {$post->id}");
         } else {
-            // Add like
-            PostLike::create([
-                'post_id' => $post->id,
-                'user_id' => $userId,
-            ]);
-            $liked = true;
+   
+            try {
+                PostLike::create([
+                    'post_id' => $post->id,
+                    'user_id' => $userId,
+                ]);
+                $liked = true;
+            } catch (\Exception $e) {
+                // server log the error
+                \Log::error("faied to create like for user $userId on post " . $e->getMessage());
+            }
         }
 
-        // Update post likes count
+        // update like count
+        $likeCount = PostLike::where('post_id', $post->id)->count();
         $post->update([
-            'likes_count' => $post->likes()->count(),
+            'likes_count' => $likeCount,
         ]);
 
         return $liked;
     }
 
     /**
-     * Check if a user has liked a post.
+     * check if user has liked a post
      */
     public static function hasLiked(Post $post, int $userId): bool
     {
@@ -97,7 +87,7 @@ class AnalyticsService
     }
 
     /**
-     * Get like count for a post.
+     * get like count for a post
      */
     public static function getLikeCount(Post $post): int
     {
@@ -105,7 +95,7 @@ class AnalyticsService
     }
 
     /**
-     * Get unique view count for a post.
+     * get view count
      */
     public static function getViewCount(Post $post): int
     {

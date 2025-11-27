@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Blueprint for schema
+ * Schema for create command
+ * Migration for inheritance
+ */
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -7,7 +12,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * run migrations
      */
     public function up(): void
     {
@@ -18,15 +23,16 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('viewed_date');
             $table->timestamps();
-            
-            // Unique constraint: one view per IP/user per day per post
-            $table->unique(['post_id', 'ip_address', 'viewed_date']);
+            // Removed unique constraint to allow multiple views per IP per day
             $table->index(['post_id', 'viewed_date']);
+            $table->index(['ip_address', 'viewed_date']);
         });
     }
 
+
+
     /**
-     * Reverse the migrations.
+     * drop migrations
      */
     public function down(): void
     {

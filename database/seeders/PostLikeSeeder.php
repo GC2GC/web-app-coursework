@@ -9,28 +9,24 @@ use Illuminate\Database\Seeder;
 
 class PostLikeSeeder extends Seeder
 {
-    /**
-     * Seed the post_likes table with varied scenarios.
-     * Creates likes using factories with different user/post relationships.
-     */
     public function run(): void
     {
         $posts = Post::all();
         $users = User::all();
 
         foreach ($posts as $post) {
-            // Determine number of likes based on post id (for varied scenarios)
+            // determine number of likes based on post id
             $likeCount = match($post->id) {
-                1 => 7,      // Post 1: 7 likes (popular)
-                2 => 0,      // Post 2: 0 likes (unpopular)
-                3 => 3,      // Post 3: 3 likes (moderate)
-                4 => 4,      // Post 4: 4 likes (views-only)
-                5 => 3,      // Post 5: 3 likes (comment-heavy)
-                default => rand(0, 5),  // Posts 6-10: random 0-5 likes
+                1 => 7,    
+                2 => 0,     
+                3 => 3,      
+                4 => 4,      
+                5 => 3,     
+                default => rand(0, 5),
             };
 
-            // Create likes using factory
-            // Ensure different users like each post (one-per-user constraint)
+            // create likes using factory
+            // ensure different users like each post 
             $likerIds = $users->take($likeCount)->pluck('id');
 
             foreach ($likerIds as $userId) {
@@ -41,7 +37,7 @@ class PostLikeSeeder extends Seeder
             }
         }
 
-        // Refresh all post like counts
+        //refresh all post like counts
         Post::all()->each(fn($post) => $post->update([
             'likes_count' => $post->likes()->count(),
         ]));

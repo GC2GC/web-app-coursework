@@ -12,9 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class PostViewFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
+     * state
      */
     public function definition(): array
     {
@@ -27,7 +25,7 @@ class PostViewFactory extends Factory
     }
 
     /**
-     * Create a view by a specific user.
+     *create view
      */
     public function byUser(User $user): static
     {
@@ -37,7 +35,7 @@ class PostViewFactory extends Factory
     }
 
     /**
-     * Create a view by an anonymous visitor.
+     * create view for anonymous user
      */
     public function anonymous(): static
     {

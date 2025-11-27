@@ -12,11 +12,13 @@ class PostLike extends Model
 
     protected $table = 'post_likes';
 
+    //fillable fields
     protected $fillable = [
         'post_id',
         'user_id',
     ];
 
+    //casting to datetime 
     protected function casts(): array
     {
         return [
@@ -26,7 +28,7 @@ class PostLike extends Model
     }
 
     /**
-     * Get the post this like is for.
+     * post this like is for
      */
     public function post()
     {
@@ -34,7 +36,7 @@ class PostLike extends Model
     }
 
     /**
-     * Get the user who liked the post.
+     * person who liked the post
      */
     public function user()
     {

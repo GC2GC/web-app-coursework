@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     /**
-     * Get all posts with pagination.
+     * get all posts with pagination
      */
     public function index()
     {

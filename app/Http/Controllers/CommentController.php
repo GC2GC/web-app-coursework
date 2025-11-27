@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class CommentController extends Controller
 {
     /**
-     * Get all comments for a specific post.
+     * all comments for a post
      */
     public function index(Post $post)
     {
@@ -30,7 +30,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Get a single comment.
+     * single comment for a post
      */
     public function show(Post $post, Comment $comment)
     {
@@ -45,7 +45,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Create a comment on a post.
+     * create comment
      */
     public function store(Request $request, Post $post)
     {
@@ -56,21 +56,22 @@ class CommentController extends Controller
 
         $comment = $post->comments()->create($validated);
 
-        // Increment post comment count
+    
+
         $post->increment('comments_count');
 
         return response()->json([
-            'message' => 'Comment created successfully',
+            'message' => 'Comment created',
             'data' => $comment->load('author'),
         ], 201);
     }
 
     /**
-     * Update a comment.
+     * update comment
      */
     public function update(Request $request, Post $post, Comment $comment)
     {
-        // Verify comment belongs to post
+        // should belong to a blog post, if not return 404
         if ($comment->post_id !== $post->id) {
             return response()->json(['message' => 'Comment not found'], 404);
         }
@@ -78,32 +79,29 @@ class CommentController extends Controller
         $validated = $request->validate([
             'content' => 'required|string|min:1|max:5000',
         ]);
-
         $comment->update($validated);
 
         return response()->json([
-            'message' => 'Comment updated successfully',
+            'message' => 'Comment updated',
             'data' => $comment,
         ]);
     }
 
     /**
-     * Delete a comment.
+     * delete a comment
      */
     public function destroy(Post $post, Comment $comment)
     {
-        // Verify comment belongs to post
+        // should belong to a blog post, if not return 404
         if ($comment->post_id !== $post->id) {
             return response()->json(['message' => 'Comment not found'], 404);
         }
 
         $comment->delete();
-
-        // Decrement post comment count
         $post->decrement('comments_count');
 
         return response()->json([
-            'message' => 'Comment deleted successfully',
+            'message' => 'Comment deleted',
         ]);
     }
 }

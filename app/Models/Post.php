@@ -30,104 +30,29 @@ class Post extends Model
         ];
     }
 
-    /**
-     * Get the author of this post.
-     */
+    // relationship to user who created the post
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Get all comments on this post.
-     */
+    // get all comments
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
-    /**
-     * Get all views recorded for this post.
-     */
     public function views()
     {
         return $this->hasMany(PostView::class);
     }
 
-    /**
-     * Get all likes for this post.
-     */
+    // all likes on this post
     public function likes()
     {
         return $this->hasMany(PostLike::class);
     }
 
-    /**
-     * Get unique views count for this post.
-     */
-    public function getUniqueViewsCountAttribute()
-    {
-        return $this->views()->distinct('ip_address')->count('ip_address');
-    }
-
-    /**
-     * Get the count of likes for this post.
-     */
-    public function getLikesCountAttribute()
-    {
-        return $this->likes()->count();
-    }
-
-    /**
-     * Get the count of comments for this post.
-     */
-    public function getCommentsCountAttribute()
-    {
-        return $this->comments()->count();
-    }
-
-    /**
-     * Refresh all cached analytics counters.
-     */
-    public function refreshAnalytics()
-    {
-        $this->update([
-            'views_count' => $this->views()->distinct('ip_address')->count('ip_address'),
-            'likes_count' => $this->likes()->count(),
-            'comments_count' => $this->comments()->count(),
-        ]);
-
-        return $this;
-    }
-
-    /**
-     * Get unique views count (calculated from views table).
-     */
-    public function getUniqueViewsAttribute(): int
-    {
-        return $this->views()->distinct('ip_address')->count('ip_address');
-    }
-
-    /**
-     * Get current likes count (calculated from likes table).
-     */
-    public function getCurrentLikesAttribute(): int
-    {
-        return $this->likes()->count();
-    }
-
-    /**
-     * Get current comments count (calculated from comments table).
-     */
-    public function getCurrentCommentsAttribute(): int
-    {
-        return $this->comments()->count();
-    }
-
-    /**
-     * Get engagement metrics for this post.
-     * Returns an array with views, likes, and comments counts.
-     */
     public function getEngagementMetrics(): array
     {
         return [
@@ -138,76 +63,55 @@ class Post extends Model
         ];
     }
 
-    /**
-     * Scope: Order posts by most views.
-     */
+      public function refreshAnalytics()
+    {
+        $this->update([
+            'views_count' => $this->views()->distinct('ip_address')->count('ip_address'),
+            'likes_count' => $this->likes()->count(),
+            'comments_count' => $this->comments()->count(),
+        ]);
+
+
+        return $this;
+    }
+
+
+    // order by most popular first
     public function scopeOrderByMostViews($query)
     {
         return $query->orderBy('views_count', 'desc');
     }
 
-    /**
-     * Scope: Order posts by most likes.
-     */
+    //most likes
     public function scopeOrderByMostLikes($query)
     {
         return $query->orderBy('likes_count', 'desc');
     }
 
-    /**
-     * Scope: Order posts by most comments.
-     */
+    //most comments
     public function scopeOrderByMostComments($query)
     {
         return $query->orderBy('comments_count', 'desc');
     }
 
-    /**
-     * Scope: Order posts by total engagement (views + likes + comments).
-     */
+    //overall engagement
     public function scopeOrderByEngagement($query)
     {
         return $query->orderByRaw('(views_count + likes_count + comments_count) desc');
     }
 
-    /**
-     * Scope: Filter posts with minimum views.
-     */
-    public function scopeWithMinViews($query, int $minViews)
-    {
-        return $query->where('views_count', '>=', $minViews);
-    }
 
-    /**
-     * Scope: Filter posts with minimum likes.
-     */
-    public function scopeWithMinLikes($query, int $minLikes)
-    {
-        return $query->where('likes_count', '>=', $minLikes);
-    }
-
-    /**
-     * Scope: Filter posts with minimum comments.
-     */
-    public function scopeWithMinComments($query, int $minComments)
-    {
-        return $query->where('comments_count', '>=', $minComments);
-    }
-
-    /**
-     * Scope: Get trending posts (high engagement in last N days).
-     */
+    //trending
     public function scopeTrending($query, int $days = 7)
     {
         return $query->where('created_at', '>=', now()->subDays($days))
             ->orderByEngagement();
     }
 
-    /**
-     * Scope: Get popular posts (above median engagement).
-     */
+    //popular
     public function scopePopular($query)
     {
+        //median engagement calculation
         $medianEngagement = self::selectRaw('(views_count + likes_count + comments_count) as total_engagement')
             ->get()
             ->median('total_engagement');
