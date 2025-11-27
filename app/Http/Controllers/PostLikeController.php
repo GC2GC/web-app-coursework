@@ -14,11 +14,7 @@ class PostLikeController extends Controller
      */
     public function toggle(Request $request, Post $post)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-        ]);
-
-        $userId = $validated['user_id'];
+        $userId = auth()->id();
 
         // Check if user already liked this post
         $wasLiked = AnalyticsService::hasLiked($post, $userId);
@@ -26,15 +22,8 @@ class PostLikeController extends Controller
         // Toggle the like
         $isNowLiked = AnalyticsService::toggleLike($post, $userId);
 
-        return response()->json([
-            'message' => $isNowLiked ? 'Post liked successfully' : 'Like removed successfully',
-            'data' => [
-                'post_id' => $post->id,
-                'user_id' => $userId,
-                'liked' => $isNowLiked,
-                'current_likes' => $post->fresh()->likes_count,
-            ],
-        ], $isNowLiked ? 201 : 200);
+        return redirect()->back()
+            ->with('success', $isNowLiked ? 'Post liked successfully' : 'Like removed successfully');
     }
 
     /**
@@ -65,11 +54,7 @@ class PostLikeController extends Controller
      */
     public function check(Request $request, Post $post)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-        ]);
-
-        $userId = $validated['user_id'];
+        $userId = auth()->id();
         $hasLiked = AnalyticsService::hasLiked($post, $userId);
 
         return response()->json([

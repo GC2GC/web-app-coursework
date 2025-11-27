@@ -6,6 +6,8 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\PostLikeController;
 use Illuminate\Support\Facades\Route;
 
+// API routes - can be protected later if needed
+// For now, keeping them accessible for testing
 // Posts endpoints
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index']);

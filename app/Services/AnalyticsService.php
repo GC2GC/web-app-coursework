@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Post;
 use App\Models\PostLike;
 use App\Models\PostView;
+use App\Models\User;
+use App\Notifications\PostLiked;
 use Illuminate\Support\Carbon;
 
 class AnalyticsService
@@ -17,8 +19,13 @@ class AnalyticsService
     {
         $today = Carbon::now()->toDateString();
         
+        // Use authenticated user if available and not explicitly provided
+        if ($userId === null && auth()->check()) {
+            $userId = auth()->id();
+        }
+        
         // if neither IP nor user is provided, use request IP
-        if (!$ipAddress && !$userId) {
+        if (!$ipAddress) {
             $ipAddress = request()->ip();
         }
 
@@ -49,18 +56,25 @@ class AnalyticsService
             ->first();
 
         if ($like) {
-
             $like->delete();
             $liked = false;
             \Log::info("Like removed for user $userId on post {$post->id}");
         } else {
-   
             try {
                 PostLike::create([
                     'post_id' => $post->id,
                     'user_id' => $userId,
                 ]);
                 $liked = true;
+                
+                // Send notification to post owner if they didn't like their own post
+                $post->load('author');
+                if ($post->author && $post->author->id !== $userId) {
+                    $liker = User::find($userId);
+                    if ($liker) {
+                        $post->author->notify(new PostLiked($post, $liker));
+                    }
+                }
             } catch (\Exception $e) {
                 // server log the error
                 \Log::error("faied to create like for user $userId on post " . $e->getMessage());

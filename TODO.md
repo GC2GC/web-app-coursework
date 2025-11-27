@@ -1,71 +1,79 @@
-# Coursework TODO
+# Coursework 2 - Frontend Implementation TODO List
 
-This file lists the planned tasks to complete the Laravel coursework. Each item includes a short description and acceptance criteria. Pick an item to start and I'll implement it (marking todos in the managed todo list as we go).
+## Authentication [5 marks - Target: 3-5 marks]
 
--   [x] Project planning & assumptions
+-   [x] Install and configure Laravel Fortify for authentication (login, register, logout, password reset)
+-   [x] Create authentication views (login, register, password reset) using Tailwind CSS
+-   [x] Add authentication middleware to protect all routes - users must login before accessing any data
+-   [x] Update controllers to use auth()->user() instead of requiring user_id in requests
 
-    -   Summary: capture requirements, assumptions and data contracts. Include the high-marks analytics requirement: capture >2 analytics types and at least one requiring user interaction (we'll implement a 'like' API). Create `docs/PLAN.md` if requested.
-    -   Acceptance: `docs/PLAN.md` (optional) contains inputs/outputs and assumptions.
+## User Dashboard [6 marks - Target: 6 marks]
 
--   [x] Create migrations
+-   [x] Create User Dashboard page showing list of posts with pagination
+-   [x] Display posts with author names (not IDs), creation dates, view counts, like counts, comment counts
+-   [x] Add navigation/layout template with header, sidebar, and footer using Tailwind CSS
 
-    -   Create migrations for `users`, `posts`, `comments`, `post_views`, `post_likes` (optional `post_time_spent` for time-on-post analytics). Add indexes and foreign keys.
-    -   Acceptance: `php artisan migrate` builds the schema and tables have expected columns.
+## User Resource [5 marks - Target: 5 marks]
 
--   [x] Create models & relationships
+-   [x] Create UserController with index, show, create, store, destroy methods
+-   [x] Create user index page listing all users (admin only) with create and delete functionality
+-   [x] Create user show page displaying user's name, email, and all their posts and comments
+-   [x] Implement authorization: users can only edit their own posts/comments, admins can edit all
+-   [x] Set up notification system for when someone interacts with user posts/comments (likes, comments)
 
-    -   Implement Eloquent models: `User`, `Post`, `Comment`, `PostView`, `PostLike` (and optional `PostTimeSpent`). Add `fillable`, casts and relationship methods.
-    -   Acceptance: relationships work in tinker/unit tests and return expected counts.
+## Administrator Access [6 marks - Target: 3-6 marks]
 
--   [x] Create model factories
+-   [x] Create admin middleware to check is_administrator flag
+-   [x] Add admin panel/dashboard with ability to modify any user data
+-   [x] Allow administrators to register new user accounts (admin-only registration form)
+-   [x] Ensure admins can access all functionality (edit/delete any post, comment, user)
 
-    -   Factories for `User`, `Post`, `Comment`, `PostView`, `PostLike`. Include deterministic entries for at least one admin and one regular user.
-    -   Acceptance: factories produce valid instances and are usable in seeders/tests.
+## Working with Data [6 marks - Target: 4-6 marks]
 
--   [x] Create seeders
+-   [x] Convert PostController to return views instead of JSON responses
+-   [x] Create post creation form with title, content, and image upload fields
+-   [x] Create post edit form (only for post owner or admin)
+-   [x] Implement image upload functionality for posts (store in storage, display in views)
+-   [x] Add validation rules for post creation/editing (title, content, image file types/sizes)
+-   [x] Create post show page displaying full post with image, analytics, comments, and like button
+-   [x] Convert CommentController to return views/redirects instead of JSON
+-   [x] Create comment form on post show page with proper validation
 
-    -   Write seeders using the factories to generate varied data and fixed stable records (admin, regular user, sample posts). Cover edge cases: posts with zero comments, posts with many comments, posts with/without likes and views.
-    -   Acceptance: `php artisan db:seed` populates representative data.
+## Desired Enhancement [6 marks - Target: 3-6 marks]
 
--   [x] Implement posts & comments APIs
+-   [x] Create user profile edit page (users can only edit their own profile)
+-   [x] Add form to edit first_name, last_name, and email address
+-   [x] Add authorization check to ensure users can only edit their own details
 
-    -   Controllers and routes for creating, reading and listing posts and comments (API-only is sufficient).
-    -   Acceptance: JSON endpoints behave correctly and are covered by feature tests.
+## Usability and Look & Feel [8 marks - Target: 6-8 marks]
 
--   [x] Implement analytics storage
+-   [x] Replace default Laravel welcome page with custom homepage/landing page
+-   [x] Ensure all views use user names instead of IDs (e.g., author name, not author ID)
+-   [x] Remove all technical artefacts (null strings, raw IDs, debug output)
+-   [x] Create consistent navigation menu with links to dashboard, profile, admin panel (if admin)
+-   [x] Style all pages with Tailwind CSS for professional, modern look and feel
+-   [x] Add flash messages/success notifications for actions (post created, comment added, etc.)
 
-    -   Record unique views (by IP or user+date), likes (user interaction), and optionally time-on-post. Provide service layer to encapsulate analytics logic.
-    -   Acceptance: calls to analytics endpoints create records and are queryable.
+## Code Quality [8 marks - Target: 6-8 marks]
 
--   [x] API endpoint: Like a post (interactive)
+-   [ ] Review all controllers to ensure Route Model Binding is used consistently (remove manual lookups)
+-   [x] Create Policy classes for authorization (PostPolicy, CommentPolicy, UserPolicy)
+-   [ ] Extract repeated code into reusable methods/helpers (e.g., authorization checks)
+-   [ ] Ensure all validation rules are consistent and follow Laravel conventions
+-   [ ] Add proper error handling and user-friendly error messages
+-   [ ] Update routes to use resource controllers and proper naming conventions
 
-    -   POST `/api/posts/{post}/like` endpoint that creates a single like per user per post (idempotent). No front-end required.
-    -   Acceptance: endpoint creates `post_likes` record, prevents duplicates; tests verify behavior.
+## Database & Migrations
 
--   [x] Analytics aggregation & queries
+-   [x] Add image_path column to posts table migration (if not exists)
+-   [x] Create notifications table migration for user notifications
 
-    -   Model helpers/scopes to return `unique_views`, `likes_count`, `comments_count`, `average_time_spent` for a post.
-    -   Acceptance: aggregation returns correct values in unit tests.
+## Testing
 
--   [ ] Tests: factories, models, analytics
-
-    -   PHPUnit tests covering factories, model relationships, API endpoints (posts, comments, likes) and analytics correctness.
-    -   Acceptance: `vendor/bin/phpunit` passes tests for the new features.
-
--   [ ] Documentation & usage
-
-    -   Update `README.md` with steps to migrate, seed, run the server and examples for calling analytics endpoints. Optionally add `docs/USAGE.md`.
-    -   Acceptance: Instructions allow another developer to reproduce the environment and exercise endpoints.
-
--   [ ] Quality gate: migrate, seed, test
-
-    -   Run `php artisan migrate:fresh --seed` and `phpunit`. Fix any issues discovered.
-    -   Acceptance: migrations/seeds complete and tests pass.
-
--   [ ] Optional extras / polish
-    -   Add indexes, PHPDoc, small authorization policies, API token auth for likes, and more complex analytics if time permits.
-    -   Acceptance: extras documented and covered by tests or seed data.
+-   [ ] Test all authentication flows (login, register, logout, password reset)
+-   [ ] Test authorization (users can only edit own content, admins can edit all)
+-   [ ] Test image upload functionality and display
 
 ---
 
-Next step: tell me which checklist item you want me to start implementing. I recommend starting with `Create migrations` so we can build the database schema and iterate from there.
+**Total Tasks: 42**

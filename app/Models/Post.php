@@ -14,6 +14,7 @@ class Post extends Model
         'user_id',
         'title',
         'content',
+        'image_path',
         'views_count',
         'likes_count',
         'comments_count',
@@ -118,5 +119,17 @@ class Post extends Model
 
         return $query->whereRaw('(views_count + likes_count + comments_count) >= ?', [$medianEngagement])
             ->orderByEngagement();
+    }
+
+    //posts with minimum views
+    public function scopeWithMinViews($query, int $minViews)
+    {
+        return $query->where('views_count', '>=', $minViews);
+    }
+
+    //posts with minimum likes
+    public function scopeWithMinLikes($query, int $minLikes)
+    {
+        return $query->where('likes_count', '>=', $minLikes);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Notifications\PostCommented;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -50,20 +51,24 @@ class CommentController extends Controller
     public function store(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
             'content' => 'required|string|min:1|max:5000',
         ]);
 
-        $comment = $post->comments()->create($validated);
-
-    
+        $comment = $post->comments()->create([
+            'user_id' => auth()->id(),
+            'content' => $validated['content'],
+        ]);
 
         $post->increment('comments_count');
+        
+        // Send notification to post owner if they didn't comment on their own post
+        $post->load('author');
+        if ($post->author && $post->author->id !== auth()->id()) {
+            $post->author->notify(new PostCommented($post, $comment, auth()->user()));
+        }
 
-        return response()->json([
-            'message' => 'Comment created',
-            'data' => $comment->load('author'),
-        ], 201);
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Comment added successfully.');
     }
 
     /**
@@ -75,6 +80,8 @@ class CommentController extends Controller
         if ($comment->post_id !== $post->id) {
             return response()->json(['message' => 'Comment not found'], 404);
         }
+
+        $this->authorize('update', $comment);
 
         $validated = $request->validate([
             'content' => 'required|string|min:1|max:5000',
@@ -97,11 +104,12 @@ class CommentController extends Controller
             return response()->json(['message' => 'Comment not found'], 404);
         }
 
+        $this->authorize('delete', $comment);
+
         $comment->delete();
         $post->decrement('comments_count');
 
-        return response()->json([
-            'message' => 'Comment deleted',
-        ]);
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Comment deleted successfully.');
     }
 }

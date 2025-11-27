@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Services\AnalyticsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -17,15 +18,17 @@ class PostController extends Controller
             ->latest()
             ->paginate(15);
 
-        return response()->json([
-            'data' => $posts->items(),
-            'meta' => [
-                'total' => $posts->total(),
-                'per_page' => $posts->perPage(),
-                'current_page' => $posts->currentPage(),
-                'last_page' => $posts->lastPage(),
-            ],
+        return view('dashboard', [
+            'posts' => $posts,
         ]);
+    }
+
+    /**
+     * Show the form for creating a new post.
+     */
+    public function create()
+    {
+        return view('posts.create');
     }
 
     /**
@@ -37,24 +40,10 @@ class PostController extends Controller
         // Record a view for this post
         AnalyticsService::recordView($post);
 
-        $post->load(['author', 'comments.author', 'likes', 'views']);
+        $post->load(['author', 'comments.author', 'likes.user']);
 
-        return response()->json([
-            'data' => [
-                'id' => $post->id,
-                'title' => $post->title,
-                'content' => $post->content,
-                'author' => [
-                    'id' => $post->author->id,
-                    'name' => $post->author->first_name . ' ' . $post->author->last_name,
-                    'is_admin' => $post->author->is_administrator,
-                ],
-                'views_count' => $post->views_count,
-                'likes_count' => $post->likes_count,
-                'comments_count' => $post->comments_count,
-                'created_at' => $post->created_at,
-                'updated_at' => $post->updated_at,
-            ],
+        return view('posts.show', [
+            'post' => $post,
         ]);
     }
 
@@ -64,17 +53,37 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $post = Post::create($validated);
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('posts', 'public');
+        }
 
-        return response()->json([
-            'message' => 'Post created successfully',
-            'data' => $post,
-        ], 201);
+        $post = Post::create([
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'image_path' => $imagePath,
+        ]);
+
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Post created successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified post.
+     */
+    public function edit(Post $post)
+    {
+        $this->authorize('update', $post);
+
+        return view('posts.edit', [
+            'post' => $post,
+        ]);
     }
 
     /**
@@ -82,17 +91,28 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'content' => 'sometimes|string',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($post->image_path) {
+                Storage::disk('public')->delete($post->image_path);
+            }
+            $imagePath = $request->file('image')->store('posts', 'public');
+            $validated['image_path'] = $imagePath;
+        }
 
         $post->update($validated);
 
-        return response()->json([
-            'message' => 'Post updated successfully',
-            'data' => $post,
-        ]);
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Post updated successfully.');
     }
 
     /**
@@ -100,10 +120,16 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
+        // Delete image if exists
+        if ($post->image_path) {
+            Storage::disk('public')->delete($post->image_path);
+        }
+
         $post->delete();
 
-        return response()->json([
-            'message' => 'Post deleted successfully',
-        ]);
+        return redirect()->route('dashboard')
+            ->with('success', 'Post deleted successfully.');
     }
 }

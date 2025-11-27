@@ -1,5 +1,5 @@
 The task is to plan and create a simple web application, using Laravel. This coursework involves writing
-part-of the back-end of that web application.
+the front-end of the web application and should be based on coursework 1.
 There is a total of 50 marks available for this coursework. This coursework is worth 15% of your total
 grade for this module.
 The web application should have the following basic functionality:
@@ -9,23 +9,90 @@ You could create a simple blog where the admin can post articles which users can
 simple version of canvas where admin (or lecturers) can post lecture slides and students can comment on
 them. This is the basic functionality only; it is up to you to look at the mark scheme and
 add functionality to evidence various skills. Plan this before you start.
-Each user has the following information associated with them:
-• ID
-• First Name
-• Last Name
-• Adminstrator flag (true if they are an administrator, false if not)
-Your Task
-Your job is to create the various migrations, models, seeds and model factories. Your seeds and model
-factories must populate the database with random and meaningful values broadly covering all possible
-scenarios. Your seeds and model factories must also create some fixed and stable values (at least one
-adminstrator, one user, etc).
+Authentication [5 marks]
+The web application should have full authentication system using Laravel Fortify or Breeze and require
+users to login before they can access any data
+User Dashboard [6 marks]
+A user should be able to access a page that shows them a list of posts.
+User Resource [5 marks]
+The web application should support the ability for creation and deletion of users.
+Administrator Access [6 marks]
+Further to the authentication requirements above, a user should only be able to modify data on the
+application if they are the owner of that post. If they are an administrator then they can access all
+functionality of the application.
+Working with Data [6 marks]
+Users can create and edit posts. A post can be any type of data (image, text, etc). Validation has been
+implemented when users enter data.
+Desired Enhancement [6 marks]
+As an entrancement all users should be able to edit some of their personal details such as name and
+emdial address.
+Usability and Look & Feel [8 marks]
+The web application should look decent and use a CSS framework such as Bootstrap. The end-user of the
+web application should be able to navigate and use the it with easy and see no technical artefacts (such
+as "null" strings). The basic Laravel landing page should be adjusted to be relevant for this coursework.
+Page 1 of 3
+CSF304 – Coursework 2 Due: 03/12/2025 at 11:00am
+Code Quality [8 marks]
+The web application should be written to a high standard and apply all the coding conventions that we
+have looked at in this module (and others). Code should not be repeated.
 Marking Scheme
 Marks are allocated as follows:
-• Migrations - 10 marks
-• Models - 8 marks
-• Seeds - 14 marks
-• Model Factories - 8 marks
-• Basic Analytics - 10 marks
-The marks will be awarded based on the functionality and quality of each category above. For example ,
-seeds must populate the database with random data that covers all situations. Please see the rubric for
-coursework 1 for a better breakdown of marks.
+• Authentication - 5 marks
+• User Dashboard - 6 marks
+• User Resource - 5 marks
+• Administrator Access - 6 marks
+• Working with Data 6 marks
+• Desired Enhancement - 6 marks
+• Usability and Look & Feel - 8 marks
+• Code Quality - 8 marks
+The marks will be awarded based on the functionality and quality of each category above. Please see the
+rubric for coursework 2 for a better breakdown of marks.
+
+
+
+BELOW IS THE HIGHEST BAND FOR EACH SECTION IN THE MARKING RUBRIC
+
+
+3-5 Marks: Fully implemented authentication
+system in done with either Laravel Fortify or
+Breeze.
+
+-6 Marks: A user dashboard page fully
+implemented
+
+-5 Marks: A fully implemented user resource
+where we can create and delete users. Clicking
+on the user's name takes you to view with all
+their posts and comments listed. Users can only
+edit items and comments which they
+themselves posted, unless a role permits them
+(admin). Users get notificaiton when someone
+else intereacts with their post or comment.
+
+
+3-6 Marks: Fully implemented adminsistrator
+controls where they can modify data for users.
+Adminstrators can also register new accounts
+for users. In general adminstrators have access
+to all functionality on the web appliaction
+
+4-6 Marks: Users can upload images which are
+displayed with their posts
+
+
+3-6 Marks: Fully implemented editing of user
+details. A user can only edit their own details.
+
+
+6-8 Marks: The web application looks good and
+uses a CSS framework like Bootstrap. There are
+no technical artefacts and no default views like
+a laravel landing page. Usability has clearly been
+considered as well with implementations such as
+not using an ID of a model but instead its name.
+
+
+6-8 Marks: Code quality is of a high standard
+with applied coding convetions. Techniques like
+Route Model Binding is being used to remove
+repeated code.
